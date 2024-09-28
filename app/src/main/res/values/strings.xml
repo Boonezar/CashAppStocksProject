@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CashAppStocksProject</string>
+    <string name="cash_app_stocks_project">Cash App Stocks Take Home Project</string>
+    <string name="by_sam_christiansen">by Sam Christiansen</string>
+    <string name="get_stocks">Get Stocks</string>
+    <string name="get_empty_stocks">Get Empty Stocks</string>
+    <string name="get_error_stocks">Get Error Stocks</string>
+    <string name="stocks">Stocks</string>
+    <string name="error_has_occurred">An error has occurred…</string>
+    <string name="no_stocks_to_display">No stocks to display…</string>
+    <string name="loading">Loading…</string>
+    <string name="dollar_amount">$%.2f %s as of %s/%s/%s</string>
+    <string name="quantity">Qty: %d</string>
+</resources>
