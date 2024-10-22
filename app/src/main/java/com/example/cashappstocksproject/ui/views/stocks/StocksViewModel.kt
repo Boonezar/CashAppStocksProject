@@ -14,8 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StocksViewModel @Inject constructor(
-    private val stocksService: StocksService
-    //private val stocksRepository: StocksRepository
+    //private val stocksService: StocksService
+    private val stocksRepository: StocksRepository
 ) : BaseViewModel<Event, State, Effect>() {
     override fun setInitialState() = State(
         stocks = emptyList(),
@@ -36,13 +36,13 @@ class StocksViewModel @Inject constructor(
     private fun callApiByOption(option: String) {
         setState { copy(isLoading = true) }
         viewModelScope.launch {
-            val result = when (option) {
-                ApiOption.NORMAL.value -> stocksService.getStocks()
-                ApiOption.EMPTY.value -> stocksService.getEmptyStocks()
-                ApiOption.ERROR.value -> stocksService.getErrorStocks()
-                else -> stocksService.getStocks()
-            }
-            //val result = stocksRepository.getStocks()
+//            val result = when (option) {
+//                ApiOption.NORMAL.value -> stocksService.getStocks()
+//                ApiOption.EMPTY.value -> stocksService.getEmptyStocks()
+//                ApiOption.ERROR.value -> stocksService.getErrorStocks()
+//                else -> stocksService.getStocks()
+//            }
+            val result = stocksRepository.getStocks()
             if (result != null) {
                 setState { copy(stocks = result.stocks, filteredStocks = result.stocks) }
             } else {
