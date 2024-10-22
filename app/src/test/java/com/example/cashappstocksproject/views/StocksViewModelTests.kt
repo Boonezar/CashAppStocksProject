@@ -45,7 +45,7 @@ class StocksViewModelTests {
         // When
         val result = sut.setInitialState()
         // Then
-        Assert.assertEquals(State(emptyList(), false, false), result)
+        Assert.assertEquals(State(emptyList(), emptyList(), false, showError = false, searchValue = "", isInit = false), result)
     }
 
     @Test
@@ -58,6 +58,7 @@ class StocksViewModelTests {
         // Then
         Assert.assertEquals(mockStocksDto.stocks, sut.viewState.value.stocks)
         verify(stocksService).getStocks()
+        Assert.assertEquals(true, sut.viewState.value.isInit)
     }
 
     @Test
@@ -70,6 +71,7 @@ class StocksViewModelTests {
         // Then
         Assert.assertEquals(emptyList<StockDTO>(), sut.viewState.value.stocks)
         verify(stocksService).getEmptyStocks()
+        Assert.assertEquals(true, sut.viewState.value.isInit)
     }
 
     @Test
@@ -83,6 +85,7 @@ class StocksViewModelTests {
         Assert.assertEquals(emptyList<StockDTO>(), sut.viewState.value.stocks)
         Assert.assertEquals(true, sut.viewState.value.showError)
         verify(stocksService).getErrorStocks()
+        Assert.assertEquals(true, sut.viewState.value.isInit)
     }
 
     @Test
@@ -94,4 +97,35 @@ class StocksViewModelTests {
         // Then
         Assert.assertEquals(emptyList<StockDTO>(), sut.viewState.value.stocks)
     }
+
+    @Test
+    fun stocksViewModel_handleEventsOnSearchStringChange_searchFieldSetCorrectly() = runTest {
+        // Given
+        sut.setState { copy(stocks = mockStocksDto.stocks, filteredStocks = mockStocksDto.stocks) }
+        Assert.assertEquals(3, sut.viewState.value.filteredStocks.size)
+        // When
+        sut.handleEvents(OnSearchStringChange("name"))
+        // Then
+        Assert.assertEquals(2, sut.viewState.value.filteredStocks.size)
+        Assert.assertEquals("name", sut.viewState.value.searchValue)
+    }
+
+    @Test
+    fun stocksViewModel_handleEventsOnSearchStringChange_textFiltersByNameCorrectly() = runTest {
+        // Given
+        sut.setState { copy(stocks = mockStocksDto.stocks, filteredStocks = mockStocksDto.stocks) }
+        Assert.assertEquals(3, sut.viewState.value.filteredStocks.size)
+        // When
+        sut.handleEvents(OnSearchStringChange("name"))
+        // Then
+        Assert.assertEquals(2, sut.viewState.value.filteredStocks.size)
+        Assert.assertEquals("name", sut.viewState.value.searchValue)
+        Assert.assertEquals(listOf(mockStocksDto.stocks[0], mockStocksDto.stocks[1]), sut.viewState.value.filteredStocks)
+    }
+    // other tests
+    // byTicker
+    // byName check lowercase
+    // byTicker check lowercase
+    // empty string -> show all
+    // bad string -> empty list
 }

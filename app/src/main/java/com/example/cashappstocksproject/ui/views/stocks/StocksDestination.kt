@@ -1,5 +1,7 @@
 package com.example.cashappstocksproject.ui.views.stocks
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,6 +12,7 @@ import com.example.cashappstocksproject.ui.views.stocks.StocksContract.Event.Cal
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StocksDestination(navController: NavController, option: String) {
     val viewModel = hiltViewModel<StocksViewModel>()
@@ -19,7 +22,9 @@ fun StocksDestination(navController: NavController, option: String) {
     )
 
     LaunchedEffect(VIEW_EFFECTS_KEY) {
-        viewModel.setEvent(CallApiByOption(option))
+        if (!viewModel.viewState.value.isInit) {
+            viewModel.setEvent(CallApiByOption(option))
+        }
         viewModel.effect.onEach { effect ->
             when (effect) {
                 ToPreviousScreen -> navController.popBackStack()

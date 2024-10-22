@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +54,12 @@ fun StocksScreen(
             .padding(24.dp)
     ) {
         HeaderSection()
+        if (state.stocks.isNotEmpty()) {
+            TextField(
+                value = state.searchValue,
+                onValueChange = { onEvent(Event.OnSearchStringChange(it)) }
+            )
+        }
         StocksListSection(state)
     }
 }
@@ -81,7 +89,9 @@ private fun StocksListSection(state: State) {
                     Text(
                         text = stringResource(id = R.string.loading),
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -95,7 +105,7 @@ private fun StocksListSection(state: State) {
                 color = MaterialTheme.colorScheme.error
             )
         } else {
-            if (state.stocks.isEmpty()) {
+            if (state.filteredStocks.isEmpty()) {
                 Text(
                     text = stringResource(id = R.string.no_stocks_to_display),
                     style = MaterialTheme.typography.titleLarge
@@ -107,7 +117,7 @@ private fun StocksListSection(state: State) {
                     .background(MaterialTheme.colorScheme.onSurfaceVariant)
                 )
                 LazyColumn {
-                    items(state.stocks) {
+                    items(state.filteredStocks) {
                         StockListItem(it)
                     }
                 }
@@ -201,8 +211,36 @@ private fun StocksScreenPreview() {
                                     currentPriceTimestamp = 1681845832
                                 )
                             ),
+                            filteredStocks = listOf(
+                                StockDTO(
+                                    ticker = "RUNWAY",
+                                    name = "Rent The Runway",
+                                    currency = "USD",
+                                    currentPriceCents = 24819,
+                                    quantity = 20,
+                                    currentPriceTimestamp = 1681845832
+                                ),
+                                StockDTO(
+                                    ticker = "^DJI",
+                                    name = "Dow Jones Industrial Average",
+                                    currency = "USD",
+                                    currentPriceCents = 2648154,
+                                    quantity = 5,
+                                    currentPriceTimestamp = 1681845832
+                                ),
+                                StockDTO(
+                                    ticker = "^TNX",
+                                    name = "Treasury Yield 10 Years - Treasury Yield 10 Years",
+                                    currency = "USD",
+                                    currentPriceCents = 61,
+                                    quantity = null,
+                                    currentPriceTimestamp = 1681845832
+                                )
+                            ),
                             isLoading = false,
-                            showError = false
+                            showError = false,
+                            searchValue = "TestString",
+                            isInit = false
                         )
                     )
                 },
