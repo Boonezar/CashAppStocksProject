@@ -6,6 +6,8 @@ import com.example.cashappstocksproject.models.StocksDTO
 import com.example.cashappstocksproject.network.stocks.StocksService
 import com.example.cashappstocksproject.persistence.StockDatabase
 import com.example.cashappstocksproject.persistence.StocksDao
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class StocksRepositoryImpl @Inject constructor(
@@ -13,9 +15,11 @@ class StocksRepositoryImpl @Inject constructor(
     private val stocksDatabase: StockDatabase
 ) : StocksRepository {
     override suspend fun getStocks(): StocksDTO? {
-        val stocksFromDb = stocksDatabase.stockDao().getAll()
+        val stocksFromDb = withContext(Dispatchers.IO) {
+            stocksDatabase.stockDao().getAll()
+        }
         return if (stocksFromDb.isEmpty()) {
-            println("SAM: from db")
+            println("SAM: from service")
             val stocksFromService = stocksService.getStocks()
             val list = mutableListOf<StockEntity>()
             stocksFromService?.stocks?.forEach { stock ->
@@ -28,10 +32,12 @@ class StocksRepositoryImpl @Inject constructor(
                     quantity = stock.quantity
                 ))
             }
-            stocksDatabase.stockDao().insertAll(list)
+            withContext(Dispatchers.IO) {
+                stocksDatabase.stockDao().insertAll(list)
+            }
             stocksFromService
         } else {
-            println("SAM: from service")
+            println("SAM: from db")
             val list = mutableListOf<StockDTO>()
             stocksFromDb.forEach { stock ->
                 list.add(
